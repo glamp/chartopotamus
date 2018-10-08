@@ -5,16 +5,25 @@ import Papa from 'papaparse';
 import Button from './components/Button';
 import Tablue from './Tablue';
 import diamonds from './datasets/diamonds.json';
-import iris from './datasets/iris.json';
+import axios from 'axios';
 import './App.css';
 
-const datasets = {
-  diamonds,
-  iris,
-};
+let datasets = {};
 
 class App extends React.Component {
   state = { dataset: null };
+
+  componentDidMount() {
+    axios.get('https://github.com/glamp/tablue/raw/master/src/datasets/diamonds.json')
+      .then(response => {
+        datasets['diamonds'] = response.data;
+      })
+
+    axios.get('https://github.com/glamp/tablue/raw/master/src/datasets/iris.json')
+      .then(response => {
+        datasets['iris'] = response.data;
+      })
+  }
 
   onDrop = (files) => {
     let file = files[0];
