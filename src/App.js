@@ -4,7 +4,6 @@ import Dropzone from 'react-dropzone';
 import Papa from 'papaparse';
 import Button from './components/Button';
 import Tablue from './Tablue';
-import diamonds from './datasets/diamonds.json';
 import axios from 'axios';
 import './App.css';
 
