@@ -1,0 +1,15 @@
+.summary-grid {
+  height: 150px;
+  text-align: center;
+  border: 1px solid lightgrey;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.summary-grid-header {
+  border-bottom: 1px solid lightgrey;
+  font-weight: bold;
+  padding: 2px;
+  background-color: #4CAF50;
+  color: white;
+}
