@@ -22,6 +22,22 @@ const getItemStyle = (isDragging, draggableStyle, inline) => ({
   ...draggableStyle
 });
 
+const getType = (value) => {
+  if (_.isNumber(value)) {
+    return 'number';
+  }
+
+  if (_.isDate(value)) {
+    return 'date';
+  }
+
+  if (_.isBoolean(value)) {
+    return 'boolean';
+  }
+
+  return 'categorical';
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -30,7 +46,7 @@ class App extends React.Component {
         {
           id: `item-${col}`,
           content: col,
-          type: _.isNumber(props.data[0][col]) ? 'number' : 'categorical'
+          type: getType(props.data[0][col])
         }
       )), ['type', 'content'], ['asc', 'asc']),
       rows: [],
