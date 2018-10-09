@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import './charticon.css';
 
 const icons = {
@@ -32,7 +32,7 @@ export default class ChartIcon extends Component {
     }
   }
   render() {
-    var icon = <img className="icon" src={icons[this.props.type.toLowerCase()]} />
+    var icon = <img alt="chart icon" className="icon" src={icons[this.props.type.toLowerCase()]} />
     return (
       <div onClick={this.handleClick} className={this.getClass()}>
         {icon}

@@ -10,15 +10,17 @@ import './App.css';
 
 let datasets = {};
 
+/*
 const meat = require('./datasets/meat.json').map(x => {
   x.date = moment(x.date).toDate();
   return x;
 })
+*/
 
 class App extends React.Component {
-  state = { dataset: meat };
+  state = { dataset: null };
+  // state = { dataset: meat };
 
-  /*
   componentDidMount() {
     axios.get('/glamp/tablue/raw/master/src/datasets/diamonds.json')
       .then(response => {
@@ -38,7 +40,6 @@ class App extends React.Component {
         })
       })
   }
-  */
 
   onDrop = (files) => {
     let file = files[0];

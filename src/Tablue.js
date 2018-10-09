@@ -131,6 +131,7 @@ class App extends React.Component {
     let colorScaler = {};
     values.map(x => {
       colorScaler[x] = palette.next().value;
+      return null;
     })
     this.setState({ colorScaler, displayLegend: true });
   }
@@ -148,6 +149,7 @@ class App extends React.Component {
     const symbolGen = symbols.symbolGenerator();
     _.uniq(_.map(this.props.data, this.state.selectedShape.content)).map(x => {
       shapeScaler[x] = symbolGen.next().value;
+      return null;
     });
     this.setState({ shapeScaler, displayLegend: true });
   }

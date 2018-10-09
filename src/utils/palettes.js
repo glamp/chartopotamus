@@ -13,8 +13,7 @@ function numerical(low, high) {
   return (x) => {
     var xScaled = scaleLinear()
       .domain([low, high])
-      .range([0, 1])
-      (x);
+      .range([0, 1])(x);
     return interpolateSpectral(xScaled);
   }
 }
