@@ -16,7 +16,7 @@ let datasets = {
   meat: meat.map(x => {
     x.date = moment(x.date).toDate();
     return x;
-  })
+  }),
   iris
 };
 
