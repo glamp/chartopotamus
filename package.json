@@ -1,6 +1,7 @@
 {
   "name": "tablue",
   "proxy": "https://github.com",
+  "homepage": "https://glamp.github.io/tablue/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
