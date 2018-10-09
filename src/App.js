@@ -13,12 +13,12 @@ class App extends React.Component {
   state = { dataset: null };
 
   componentDidMount() {
-    axios.get('https://github.com/glamp/tablue/raw/master/src/datasets/diamonds.json')
+    axios.get('/glamp/tablue/raw/master/src/datasets/diamonds.json')
       .then(response => {
         datasets['diamonds'] = response.data;
       })
 
-    axios.get('https://github.com/glamp/tablue/raw/master/src/datasets/iris.json')
+    axios.get('/glamp/tablue/raw/master/src/datasets/iris.json')
       .then(response => {
         datasets['iris'] = response.data;
       })

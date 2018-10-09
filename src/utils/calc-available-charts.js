@@ -11,6 +11,7 @@ export default ({ rows, columns }, data) => {
     availableCharts.best = 'histogram';
   } else if (rows.length===0 && columns.length===2) {
     availableCharts['scatter'] = true;
+    availableCharts['line'] = true;
     availableCharts['histogram'] = true;
     availableCharts['horizontalBar'] = true;
     availableCharts['table'] = true;
