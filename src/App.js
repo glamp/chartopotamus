@@ -6,9 +6,19 @@ import Button from './components/Button';
 import Tablue from './Tablue';
 import axios from 'axios';
 import moment from 'moment';
+import meat from './datasets/meat.json';
+import diamonds from './datasets/diamonds.json';
+import iris from './datasets/iris.json';
 import './App.css';
 
-let datasets = {};
+let datasets = {
+  diamonds,
+  meat: meat.map(x => {
+    x.date = moment(x.date).toDate();
+    return x;
+  })
+  iris
+};
 
 /*
 const meat = require('./datasets/meat.json').map(x => {
@@ -21,6 +31,7 @@ class App extends React.Component {
   state = { dataset: null };
   // state = { dataset: meat };
 
+  /*
   componentDidMount() {
     axios.get('/glamp/tablue/raw/master/src/datasets/diamonds.json')
       .then(response => {
@@ -40,6 +51,7 @@ class App extends React.Component {
         })
       })
   }
+  */
 
   onDrop = (files) => {
     let file = files[0];
