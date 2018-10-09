@@ -278,7 +278,7 @@ class App extends React.Component {
                   <div
                     className="droppable-facet"
                     ref={provided.innerRef}
-                    style={{ border: 'none', borderRadius: 0, borderRight: '1px solid lightgrey', height: '100%', padding: 5, paddingRight: 30, }}
+                    style={{ border: 'none', height: '100%', padding: 5, paddingRight: 30, }}
                     >
                     {this.state.fields.map((item, index) => (
                       <Draggable
@@ -305,7 +305,7 @@ class App extends React.Component {
                 )}
               </Droppable>
             </Col>
-            <Col xs={1} className="center">
+            <Col xs={2} className="center">
               <LayersIcon size={12} />{' '}<small><b>Layers</b></small>
               <hr />
               <DroppableFacet name="Color" item={this.state.selectedColor} onClickX={() => this.setState({ selectedColor: {} })} />
@@ -319,7 +319,7 @@ class App extends React.Component {
               <hr />
               {availableCharts}
             </Col>
-            <Col xs={8}>
+            <Col xs={7}>
               <Row middle="xs">
                 <Col style={{ width: 50 }}>
                   <small><b>{'Rows'}{'   '}</b></small>
