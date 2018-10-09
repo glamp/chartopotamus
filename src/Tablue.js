@@ -1,33 +1,18 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { BarChart2 as BarChart2Icon, List as ListIcon, MoreHorizontal as MoreHorizontalIcon, MoreVertical as MoreVerticalIcon, Layers as LayersIcon, Hash as HashIcon, Italic as ItalicIcon } from 'react-feather';
+import { BarChart2 as BarChart2Icon, List as ListIcon, Layers as LayersIcon } from 'react-feather';
 import { Row, Col } from 'react-flexbox-grid';
 import ChartIcon from './components/ChartIcon';
 import DroppableFacet from './components/DroppableFacet';
 import SummaryGrid from './components/SummaryGrid';
 import Chart from './components/Chart';
+import Field from './components/Field';
 import palettes from './utils/palettes';
 import symbols from './utils/symbols';
 import calcAvailableCharts from './utils/calc-available-charts';
 import _ from 'lodash';
 import { scaleLinear } from 'd3';
 import './App.css';
-
-// a little function to help us with reordering the result
-const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-  return result;
-};
-
-const renderField = ({ content, type }) => (
-  <div>
-    {type==='number' ? <HashIcon size={12} /> : <ItalicIcon size={12} />}
-    {' '}
-    {content}
-  </div>
-);
 
 const getItemStyle = (isDragging, draggableStyle, inline) => ({
   display: inline ? 'inline-block' : 'block',
@@ -91,6 +76,7 @@ class App extends React.Component {
       this.setState({ selectedChart: calcAvailableCharts(this.state, this.props.data).best });
       return;
     }
+
     if (_.indexOf(['rows', 'columns'], destination.droppableId) > -1) {
       const newItem = _.clone(result);
       let data = this.state[destination.droppableId];
@@ -103,6 +89,16 @@ class App extends React.Component {
       this.setState({ selectedChart: calcAvailableCharts(this.state, this.props.data).best });
       return;
     }
+
+    if (source.droppableId==='fields' && destination.droppableId==='fields') {
+      let { fields } = this.state;
+      const field = fields[source.index];
+      fields = _.filter(fields, (x, idx) => idx!==source.index);
+      fields.splice(destination.index, 0, field);
+      this.setState({ fields });
+      return;
+    }
+
   }
 
   updateColorPalette() {
@@ -165,67 +161,64 @@ class App extends React.Component {
   renderChart = (datum) => {
     const chartType = this.state.selectedChart;
     const { columns } = this.state;
+    if (_.isEmpty(columns)) {
+      return <SummaryGrid data={datum} />;
+    }
+
     if (chartType==='table') {
       return <SummaryGrid data={datum} />;
     }
-    if (chartType==='histogram' || chartType==='bar') {
-      let datasets = _.values(_.groupBy(datum, row => row[this.state.selectedColor.content]));
-      datasets = datasets.map((dataset, idx) => {
-        const column = columns[0];
-        return {
-          x: _.map(dataset, column.content),
-          type: 'histogram',
-          name: dataset[0][this.state.selectedColor.content],
-        }
-      });
-      return <Chart data={datasets} />;
-    }
 
-    if (chartType==='scatter') {
-      let color;
+    const fieldsToGroupBy = [
+      this.state.selectedColor.content,
+      this.state.selectedSize.content,
+      this.state.selectedShape.content
+    ].filter(x => !_.isNil(x));
+    const datasets = _.toPairs(_.groupBy(datum, x => _.values(_.pick(x, fieldsToGroupBy)).join(', '))).map(subset => {
+      let x, y, type, mode;
+
+      if (chartType==='scatter') {
+        x = _.map(subset[1], columns[0].content);
+        y = _.map(subset[1], columns[1].content);
+        type = 'scatter';
+        mode = 'markers';
+      } else if (chartType==='line') {
+        x = _.map(subset[1], columns[0].content);
+        y = _.map(subset[1], columns[1].content);
+        type = 'scatter';
+        mode = 'lines+markers';
+      }  else if (chartType==='histogram' || chartType==='bar') {
+        x = _.map(subset[1], columns[0].content);
+        type = 'histogram';
+      }
+
+
+      let marker = {};
       if (! _.isEmpty(this.state.selectedColor)) {
-        color = _.map(datum, x => this.state.colorScaler[x[this.state.selectedColor.content]]);
+        marker.color = this.state.colorScaler[subset[1][0][this.state.selectedColor.content]];
+      } else {
+        marker.color = 'steelblue';
       }
-
-      let size;
       if (! _.isEmpty(this.state.selectedSize)) {
-        size = _.map(datum, x => this.state.sizeScaler(x[this.state.selectedSize.content]));
+        marker.size = this.state.sizeScaler(subset[1][0][this.state.selectedSize.content]);
       }
-
-      let shapes;
       if (! _.isEmpty(this.state.selectedShape)) {
-        shapes = _.map(datum, x => this.state.shapeScaler[x[this.state.selectedShape.content]]);
+        marker.symbol = this.state.shapeScaler[subset[1][0][this.state.selectedShape.content]];
       }
-
-      const fieldsToGroupBy = [
-        this.state.selectedColor.content,
-        this.state.selectedSize.content,
-        this.state.selectedShape.content
-      ].filter(x => !_.isNil(x));
-      const datasets = _.toPairs(_.groupBy(datum, x => _.values(_.pick(x, fieldsToGroupBy)).join(', '))).map(subset => {
-        let marker = {};
-        if (! _.isEmpty(this.state.selectedColor)) {
-          marker.color = this.state.colorScaler[subset[1][0][this.state.selectedColor.content]];
-        } else {
-          marker.color = 'steelblue';
-        }
-        if (! _.isEmpty(this.state.selectedSize)) {
-          marker.size = this.state.sizeScaler(subset[1][0][this.state.selectedSize.content]);
-        }
-        if (! _.isEmpty(this.state.selectedShape)) {
-          marker.symbol = this.state.shapeScaler[subset[1][0][this.state.selectedShape.content]];
-        }
-        return {
-          x: _.map(subset[1], columns[0].content),
-          y: _.map(subset[1], columns[1].content),
-          marker,
-          mode: 'markers',
-          type: 'scatter',
-          name: subset[0], // datum[0][this.state.selectedColor.content]
-        };
-      });
-      return <Chart data={datasets} />;
+      return {
+        x,
+        y,
+        marker,
+        mode,
+        type,
+        name: subset[0], // datum[0][this.state.selectedColor.content]
+      };
+    });
+    const layout = {
+      xaxis: { title: _.get(this.state.columns, '[0].content'), titlefont: { family: 'Barlow' } },
+      yaxis: { title: _.get(this.state.columns, '[1].content'), titlefont: { family: 'Barlow' } },
     }
+    return <Chart data={datasets} layout={layout} />;
 
   }
 
@@ -286,7 +279,7 @@ class App extends React.Component {
                               snapshot.isDragging,
                               provided.draggableProps.style
                             )}>
-                            {renderField(item)}
+                            <Field {...item} />
                           </div>
                         )}
                       </Draggable>
@@ -312,8 +305,8 @@ class App extends React.Component {
             </Col>
             <Col xs={8}>
               <Row middle="xs">
-                <Col style={{ width: 70 }}>
-                  <MoreHorizontalIcon size={12} />{' '}<small><b>{'Rows'}{'   '}</b></small>
+                <Col style={{ width: 50 }}>
+                  <small><b>{'Rows'}{'   '}</b></small>
                 </Col>
                 <Col xs={10}>
                   <Droppable droppableId="rows" direction="horizontal">
@@ -352,8 +345,8 @@ class App extends React.Component {
               </Row>
               <hr />
               <Row middle="xs">
-                <Col style={{ width: 70 }}>
-                  <MoreVerticalIcon size={12} />{' '}<small><b>Columns</b></small>
+                <Col style={{ width: 50 }}>
+                  <small><b>Columns</b></small>
                 </Col>
                 <Col xs={10}>
                   <Droppable droppableId="columns" direction="horizontal">
