@@ -7,7 +7,7 @@ import Tablue from './Tablue';
 import axios from 'axios';
 import moment from 'moment';
 import meat from './datasets/meat.json';
-import diamonds from './datasets/diamonds.json';
+import diamonds from './datasets/diamonds-1k.json';
 import iris from './datasets/iris.json';
 import './App.css';
 
