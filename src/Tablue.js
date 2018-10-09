@@ -305,8 +305,10 @@ class App extends React.Component {
                 )}
               </Droppable>
             </Col>
-            <Col xs={2} className="center">
-              <LayersIcon size={12} />{' '}<small><b>Layers</b></small>
+            <Col xs={2}>
+              <div className="center">
+                <LayersIcon size={12} />{' '}<small><b>Layers</b></small>
+              </div>
               <hr />
               <DroppableFacet name="Color" item={this.state.selectedColor} onClickX={() => this.setState({ selectedColor: {} })} />
               <br />
@@ -315,7 +317,9 @@ class App extends React.Component {
               <DroppableFacet name="Size" item={this.state.selectedSize} onClickX={() => this.setState({ selectedSize: {} })} />
               <br />
               <br />
-              <BarChart2Icon size={12} />{' '}<small><b>Chart Types</b></small>
+              <div className="center">
+                <BarChart2Icon size={12} />{' '}<small><b>Chart Types</b></small>
+              </div>
               <hr />
               {availableCharts}
             </Col>

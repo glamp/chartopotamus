@@ -4,11 +4,9 @@ import { Droppable, Draggable } from 'react-beautiful-dnd';
 import _ from 'lodash';
 
 export default ({ name, item, onClickX }) => (
-  <Row middle="xs">
-    <Col xs={4}>
+  <Row>
+    <Col xs={12}>
       <small>{name}</small>
-    </Col>
-    <Col xs={8}>
       <Droppable droppableId={`selected${name}`} direction="horizontal">
         {(provided, snapshot) => (
           <div

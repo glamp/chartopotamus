@@ -36,6 +36,7 @@ export default class ChartIcon extends Component {
     return (
       <div onClick={this.handleClick} className={this.getClass()}>
         {icon}
+        <div className="center"><small>{this.props.type.toLowerCase()}</small></div>
       </div>
     );
   }
