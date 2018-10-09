@@ -268,7 +268,7 @@ class App extends React.Component {
       <div className="app">
         <DragDropContext onDragEnd={this.onDragEnd}>
           <Row around="xs">
-            <Col xs={1}>
+            <Col xs={2}>
               <div className="center">
                 <ListIcon size={12} />{' '}<small>Fields</small>
               </div>

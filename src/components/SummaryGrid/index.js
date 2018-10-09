@@ -1,16 +1,30 @@
 import React from 'react';
 import { Row, Col } from 'react-flexbox-grid';
 import _ from 'lodash';
+import moment from 'moment';
 import './index.css';
 
+const mean = (array) => {
+  if (_.isNumber(array[0])) {
+    return _.round(_.mean(array), 4);
+  }
+  return array[Math.floor(array.length * 0.5)];
+}
+
+const format = (x) => {
+  if (_.isDate(x)) {
+    return moment(x).format('YYYY-MM-DD');
+  }
+  return x;
+}
+
 const getStatistics = (array) => {
-  const isNumber = _.isNumber(array[0]);
-  if (isNumber) {
+  if (_.isNumber(array[0]) || _.isDate(array[0])) {
     array.sort();
     let stats = [
       ['Min', _.min(array)],
       ['25%', array[Math.floor(array.length * 0.25)]],
-      ['Mean', _.round(_.mean(array), 4)],
+      ['Mean', mean(array)],
       ['Median', array[Math.floor(array.length * 0.5)]],
       ['75%', array[Math.floor(array.length * 0.75 )]],
       ['Max', _.max(array)],
@@ -24,7 +38,7 @@ const getStatistics = (array) => {
               <small>{stat[0]}</small>
             </Col>
             <Col xs={6}>
-              <small>{stat[1]}</small>
+              <small>{format(stat[1])}</small>
             </Col>
           </Row>
         ))

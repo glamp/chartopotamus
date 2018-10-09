@@ -5,13 +5,20 @@ import Papa from 'papaparse';
 import Button from './components/Button';
 import Tablue from './Tablue';
 import axios from 'axios';
+import moment from 'moment';
 import './App.css';
 
 let datasets = {};
 
-class App extends React.Component {
-  state = { dataset: null };
+const meat = require('./datasets/meat.json').map(x => {
+  x.date = moment(x.date).toDate();
+  return x;
+})
 
+class App extends React.Component {
+  state = { dataset: meat };
+
+  /*
   componentDidMount() {
     axios.get('/glamp/tablue/raw/master/src/datasets/diamonds.json')
       .then(response => {
@@ -22,7 +29,16 @@ class App extends React.Component {
       .then(response => {
         datasets['iris'] = response.data;
       })
+
+    axios.get('/glamp/tablue/raw/master/src/datasets/meat.json')
+      .then(response => {
+        datasets['meat'] = response.data.map(x => {
+          x.date = moment(x.date).toDate();
+          return x;
+        })
+      })
   }
+  */
 
   onDrop = (files) => {
     let file = files[0];
@@ -56,6 +72,8 @@ class App extends React.Component {
             <Button onClick={() => this.setState({ dataset: datasets['diamonds'] })}>diamonds</Button>
             {' '}
             <Button onClick={() => this.setState({ dataset: datasets['iris'] })}>iris</Button>
+            {' '}
+            <Button onClick={() => this.setState({ dataset: datasets['meat'] })}>meat</Button>
           </Col>
         </Row>
       </div>
