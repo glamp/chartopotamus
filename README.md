@@ -1,4 +1,4 @@
-<h2><span style="color: coral">ta</span><span style="color: steelblue;">blue</span></h2>
+# chartopotamus
 
 ### TODO
 - [x] icons for chart types
