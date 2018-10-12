@@ -337,7 +337,7 @@ class App extends React.Component {
         </Button>
         <Button
           type='danger'
-          onClick={() => window.location.pathname = '/'}>
+          onClick={() => window.location.reload()}>
             <Trash2Icon size={12}/>
         </Button>
       </div>
