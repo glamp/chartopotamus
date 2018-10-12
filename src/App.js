@@ -2,6 +2,7 @@ import React from 'react';
 import { Row, Col } from 'react-flexbox-grid';
 import Dropzone from 'react-dropzone';
 import Papa from 'papaparse';
+import XLSX from 'xlsx';
 import Button from './components/Button';
 import Tablue from './Tablue';
 import datasets from './datasets';
@@ -25,20 +26,36 @@ class App extends React.Component {
     this.setState({ width: window.innerWidth, height: window.innerHeight });
   }
 
-  onDrop = (files) => {
-    let file = files[0];
-    let reader = new FileReader();
+  parseFile = (file) => {
+    const reader = new FileReader();
     reader.readAsBinaryString(file);
     reader.onloadend = () => {
-      try {
-        this.setState({ dataset: JSON.parse(reader.result) });
-      } catch(e) {
-        try {
-          this.setState({ dataset: Papa.parse(reader.result, { header: true, dynamicTyping: true }).data });
-        } catch(e) {
-          alert("Couldn't read your file! " + e);
-        }
+      if (file.name.endsWith(".xlsx") || file.name.endsWith(".xls")){
+        const workbook = XLSX.read(reader.result, { type: 'binary' });
+        const firstSheet = workbook.SheetNames[0];
+        const dataset = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
+        this.setState({ dataset });
+        return;
       }
+      if (file.name.endsWith(".csv")) {
+        this.setState({ dataset: Papa.parse(reader.result, { header: true, dynamicTyping: true }).data });
+        return;
+      }
+      if (file.name.endsWith(".json")) {
+        this.setState({ dataset: JSON.parse(reader.result) });
+        return;
+      }
+      alert("Unrecognized file extension: " + file.name);
+      throw "Unrecognized file extension: " + file.name;
+    }
+  }
+
+  onDrop = (files) => {
+    let file = files[0];
+    try {
+      this.parseFile(file);
+    } catch(e) {
+      alert("Couldn't read your file! " + e);
     }
   }
 
@@ -60,7 +77,7 @@ class App extends React.Component {
         <Row center="xs" middle="xs" style={{ height: window.innerHeight / 2 }}>
           <Dropzone onDrop={this.onDrop} className="box">
             <Col xs={12}>
-                <p>Drag and drop a <b>.csv or .json</b> file here, or click to select files to upload.</p>
+                <p>Drag and drop a <u>.xls, .xlsx, .csv, or .json</u> file here, or click to select files to upload.</p>
                 <p>or</p>
                 <p>Select a pre-made dataset.</p>
             </Col>
