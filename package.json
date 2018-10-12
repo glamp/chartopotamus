@@ -1,7 +1,7 @@
 {
-  "name": "tablue",
+  "name": "chartopotamus",
   "proxy": "https://github.com",
-  "homepage": "https://glamp.github.io/tablue/",
+  "homepage": "https://glamp.github.io/chartopotamus/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
