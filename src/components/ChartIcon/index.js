@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
-import './charticon.css';
+import './index.css';
 
 const icons = {
-  histogram: require('./histogram.svg'),
-  bar: require('./bar.svg'),
-  horizontalbar: require('./horizontal-bar.svg'),
-  line: require('./line.svg'),
-  scatter: require('./scatter.svg'),
-  table: require('./table.svg')
+  histogram: require('./histogram.ico'),
+  bar: require('./bar.ico'),
+  horizontalbar: require('./horizontalbar.ico'),
+  line: require('./line.ico'),
+  scatter: require('./scatter.ico'),
+  lineandscatter: require('./lineandscatter.ico'),
+  table: require('./table.ico'),
+  summary: require('./summary.ico'),
 }
 
 
@@ -26,7 +28,7 @@ export default class ChartIcon extends Component {
       return "chart-icon center selected";
     }
     if (this.props.isAvailable) {
-      return "chart-icon center onhover";
+      return "chart-icon center is-available";
     } else {
       return "chart-icon center unavailable";
     }

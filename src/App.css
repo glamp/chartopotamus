@@ -6,13 +6,15 @@ body {
 
 .app {
   overflow-x: none;
-  margin: 0px;
-  margin-top: 10px;
+  margin: 5px;
 }
 
+
 .box {
-  margin: 100px;
-  border: 2px dashed lightgrey;
+  padding: 100px;
+  font-weight: bold;
+  color: white;
+  border: 5px dashed white;
 }
 
 hr {
@@ -65,23 +67,6 @@ hr {
   margin: 1.5px;
 }
 
-.table {
-  border: 1px solid #eee;
-  border-collapse: collapse;
-}
-
-.table tr:nth-child(even) { background-color: #f2f2f2; }
-
-.table th, td {
-  border-bottom: 1px solid #ddd;
-  padding: 5px;
-  text-align: left;
-}
-
-.table th {
-    background-color: #4CAF50;
-    color: white;
-}
 
 .color-1 {color: #f4d03f;}
 .color-2 {color: #8e44ad;}

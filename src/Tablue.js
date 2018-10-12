@@ -1,12 +1,15 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { BarChart2 as BarChart2Icon, List as ListIcon, Layers as LayersIcon } from 'react-feather';
+import { Save as SaveIcon, Trash2 as Trash2Icon, BarChart2 as BarChart2Icon, List as ListIcon, Layers as LayersIcon } from 'react-feather';
 import { Row, Col } from 'react-flexbox-grid';
 import ChartIcon from './components/ChartIcon';
 import DroppableFacet from './components/DroppableFacet';
 import SummaryGrid from './components/SummaryGrid';
+import Table from './components/Table';
 import Chart from './components/Chart';
 import Field from './components/Field';
+import Button from './components/Button';
+import AggregateableField from './components/AggregateableField';
 import palettes from './utils/palettes';
 import symbols from './utils/symbols';
 import calcAvailableCharts from './utils/calc-available-charts';
@@ -21,6 +24,12 @@ const getItemStyle = (isDragging, draggableStyle, inline) => ({
   // styles we need to apply on draggables
   ...draggableStyle
 });
+
+const droppablePlaceholder = (
+  <div style={{ color: 'lightgrey', marginTop: 6, marginLeft: 10 }}>
+    <i>drag fields here</i>
+  </div>
+);
 
 const getType = (value) => {
   if (_.isNumber(value)) {
@@ -62,7 +71,22 @@ class App extends React.Component {
       shapeScaler: x => 'circle',
       sizeScaler: x => 6,
       displayLegend: true,
+
+      width: -1,
+      height: -1,
     };
+  }
+
+  componentDidMount() {
+    window.addEventListener("resize", this.updateDimensions);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateDimensions);
+  }
+  
+  updateDimensions = () => {
+    this.setState({ width: window.innerWidth, height: window.innerHeight });
   }
 
   onDragEnd = (result) => {
@@ -179,11 +203,18 @@ class App extends React.Component {
   renderChart = (datum) => {
     const chartType = this.state.selectedChart;
     const { columns } = this.state;
+
+    /*
     if (_.isEmpty(columns)) {
       return <SummaryGrid data={datum} />;
     }
+    */
 
     if (chartType==='table') {
+      return <Table data={datum} />;
+    }
+    
+    if (chartType==='summary') {
       return <SummaryGrid data={datum} />;
     }
 
@@ -193,7 +224,7 @@ class App extends React.Component {
       this.state.selectedShape.content
     ].filter(x => !_.isNil(x));
     const datasets = _.toPairs(_.groupBy(datum, x => _.values(_.pick(x, fieldsToGroupBy)).join(', '))).map(subset => {
-      let x, y, type, mode;
+      let x, y, type, mode, orientation;
 
       if (chartType==='scatter') {
         x = _.map(subset[1], columns[0].content);
@@ -203,11 +234,19 @@ class App extends React.Component {
       } else if (chartType==='line') {
         x = _.map(subset[1], columns[0].content);
         y = _.map(subset[1], columns[1].content);
+        mode = 'lines';
+      } else if (chartType==='lineAndScatter') {
+        x = _.map(subset[1], columns[0].content);
+        y = _.map(subset[1], columns[1].content);
         type = 'scatter';
         mode = 'lines+markers';
       }  else if (chartType==='histogram' || chartType==='bar') {
         x = _.map(subset[1], columns[0].content);
         type = 'histogram';
+      }  else if (chartType==='horizontalBar') {
+        x = _.map(subset[1], columns[0].content);
+        type = 'histogram';
+        orientation = 'h';
       }
 
 
@@ -224,12 +263,13 @@ class App extends React.Component {
         marker.symbol = this.state.shapeScaler[subset[1][0][this.state.selectedShape.content]];
       }
       return {
+        name: subset[0], // datum[0][this.state.selectedColor.content]
         x,
         y,
         marker,
         mode,
         type,
-        name: subset[0], // datum[0][this.state.selectedColor.content]
+        orientation,
       };
     });
     const layout = {
@@ -240,18 +280,40 @@ class App extends React.Component {
 
   }
 
-  render() {
+  getAvailableCharts = () => {
     const currentlyAvailableCharts = calcAvailableCharts(this.state, this.props.data);
-    const availableCharts = (
+
+    const chartTypes = [
+      'table',
+      'summary',
+      'histogram', 
+      'bar',
+      'horizontalBar',
+      'line',
+      'scatter',
+      'lineAndScatter',
+    ];
+
+    return (
       <Row>
-        <Col xs={6}><ChartIcon onClick={() => this.setState({ selectedChart: 'table' })} type="table" isSelected={this.state.selectedChart==='table'} isAvailable={currentlyAvailableCharts['table']} /></Col>
-        <Col xs={6}><ChartIcon onClick={() => this.setState({ selectedChart: 'histogram' })} type="histogram" isSelected={this.state.selectedChart==='histogram'} isAvailable={currentlyAvailableCharts['histogram']} /></Col>
-        <Col xs={6}><ChartIcon onClick={() => this.setState({ selectedChart: 'bar' })} type="bar" isSelected={this.state.selectedChart==='bar'} isAvailable={currentlyAvailableCharts['bar']} /></Col>
-        <Col xs={6}><ChartIcon onClick={() => this.setState({ selectedChart: 'horizontalbar' })} type="horizontalbar" isSelected={this.state.selectedChart==='horizontalbar'} isAvailable={currentlyAvailableCharts['horizontalbar']} /></Col>
-        <Col xs={6}><ChartIcon onClick={() => this.setState({ selectedChart: 'line' })} type="line" isSelected={this.state.selectedChart==='line'} isAvailable={currentlyAvailableCharts['line']} /></Col>
-        <Col xs={6}><ChartIcon onClick={() => this.setState({ selectedChart: 'scatter' })} type="scatter" isSelected={this.state.selectedChart==='scatter'} isAvailable={currentlyAvailableCharts['scatter']} /></Col>
+        {
+          chartTypes.map(type => (
+            <Col xs={6}>
+              <ChartIcon
+                type={type} 
+                onClick={() => this.setState({ selectedChart: type })}
+                isSelected={this.state.selectedChart===type}
+                isAvailable={currentlyAvailableCharts[type]} />
+            </Col>
+              
+          ))
+        }
       </Row>
     );
+  }
+
+  render() {
+    const availableCharts = this.getAvailableCharts();
 
     // TODO: add in color, shape, and size
     let dataGroups = [];
@@ -266,13 +328,29 @@ class App extends React.Component {
     dataGroups = _.toPairs(dataGroups);
 
 
+    const controlButtons = (
+      <div style={{ position: 'absolute', bottom: 0, left: 10 }}>
+        <Button
+          onClick={() => alert('hi')}
+        >
+            <SaveIcon size={12} />
+        </Button>
+        <Button
+          type='danger'
+          onClick={() => window.location.pathname = '/'}>
+            <Trash2Icon size={12}/>
+        </Button>
+      </div>
+    );
+
+
     return (
       <div className="app">
         <DragDropContext onDragEnd={this.onDragEnd}>
           <Row around="xs">
             <Col xs={2}>
               <div className="center">
-                <ListIcon size={12} />{' '}<small>Fields</small>
+                <ListIcon size={12} />{' '}<small><b>Fields</b></small>
               </div>
               <hr />
               <Droppable droppableId="fields">
@@ -312,11 +390,11 @@ class App extends React.Component {
                 <LayersIcon size={12} />{' '}<small><b>Layers</b></small>
               </div>
               <hr />
-              <DroppableFacet name="Color" item={this.state.selectedColor} onClickX={() => this.setState({ selectedColor: {} })} />
+              <DroppableFacet name="Color" item={this.state.selectedColor} onClickX={() => this.setState({ selectedColor: {} })} placeholder={droppablePlaceholder} />
               <br />
-              <DroppableFacet name="Shape" item={this.state.selectedShape} onClickX={() => this.setState({ selectedShape: {} })} />
+              <DroppableFacet name="Shape" item={this.state.selectedShape} onClickX={() => this.setState({ selectedShape: {} })} placeholder={droppablePlaceholder} />
               <br />
-              <DroppableFacet name="Size" item={this.state.selectedSize} onClickX={() => this.setState({ selectedSize: {} })} />
+              <DroppableFacet name="Size" item={this.state.selectedSize} onClickX={() => this.setState({ selectedSize: {} })} placeholder={droppablePlaceholder} />
               <br />
               <br />
               <div className="center">
@@ -359,7 +437,7 @@ class App extends React.Component {
                             )}
                           </Draggable>
                         ))}
-                        {provided.placeholder}
+                        {this.state.rows.length===0 && droppablePlaceholder}
                       </div>
                     )}
                   </Droppable>
@@ -382,20 +460,22 @@ class App extends React.Component {
                             draggableId={item.id}
                             index={index}>
                             {(provided, snapshot) => (
-                              <span
-                                className="field"
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                >
+                              <AggregateableField
+                                name={item.content}
+                                provided={provided}
+                                style={getItemStyle(
+                                  snapshot.isDragging,
+                                  provided.draggableProps.style,
+                                  true)}
+                              >
                                 {item.content}
                                 {' '}
                                 <span onClick={() => this.removeField('columns', item.id)} style={{ color: 'red', cursor: 'pointer' }}>{'×'}</span>
-                              </span>
+                              </AggregateableField>
                             )}
                           </Draggable>
                         ))}
-                        {provided.placeholder}
+                        {this.state.columns.length===0 && droppablePlaceholder}
                       </div>
                     )}
                   </Droppable>
@@ -413,6 +493,7 @@ class App extends React.Component {
             </Col>
           </Row>
         </DragDropContext>
+        {controlButtons}
       </div>
     );
   }

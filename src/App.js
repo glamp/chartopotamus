@@ -4,54 +4,26 @@ import Dropzone from 'react-dropzone';
 import Papa from 'papaparse';
 import Button from './components/Button';
 import Tablue from './Tablue';
-import axios from 'axios';
-import moment from 'moment';
-import meat from './datasets/meat.json';
-import diamonds from './datasets/diamonds-1k.json';
-import iris from './datasets/iris.json';
+import datasets from './datasets';
+import bkg from './background.png';
 import './App.css';
 
-let datasets = {
-  diamonds,
-  meat: meat.map(x => {
-    x.date = moment(x.date).toDate();
-    return x;
-  }),
-  iris
-};
-
-/*
-const meat = require('./datasets/meat.json').map(x => {
-  x.date = moment(x.date).toDate();
-  return x;
-})
-*/
 
 class App extends React.Component {
-  state = { dataset: null };
-  // state = { dataset: meat };
+  state = { dataset: null, width: -1, height: -1 };
+  // state = { dataset: datasets.iris, width: -1, height: -1 };
 
-  /*
   componentDidMount() {
-    axios.get('/glamp/tablue/raw/master/src/datasets/diamonds.json')
-      .then(response => {
-        datasets['diamonds'] = response.data;
-      })
-
-    axios.get('/glamp/tablue/raw/master/src/datasets/iris.json')
-      .then(response => {
-        datasets['iris'] = response.data;
-      })
-
-    axios.get('/glamp/tablue/raw/master/src/datasets/meat.json')
-      .then(response => {
-        datasets['meat'] = response.data.map(x => {
-          x.date = moment(x.date).toDate();
-          return x;
-        })
-      })
+    window.addEventListener("resize", this.updateDimensions);
   }
-  */
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateDimensions);
+  }
+  
+  updateDimensions = () => {
+    this.setState({ width: window.innerWidth, height: window.innerHeight });
+  }
 
   onDrop = (files) => {
     let file = files[0];
@@ -72,22 +44,56 @@ class App extends React.Component {
 
   render() {
     if (this.state.dataset) {
-      return <Tablue data={this.state.dataset} />;
+      return (
+        <div className="app">
+          <Tablue data={this.state.dataset} />
+        </div>
+      );
     }
     return (
-      <div>
-        <Row center="xs" middle="xs" className="box" style={{ height: window.innerHeight / 2 }}>
-          <Col xs={6}>
-            <Dropzone onDrop={this.onDrop} style={{ width: '100%' }}>
-              <p>Drag and drop a <b>.csv or .json</b> file here, or click to select files to upload.</p>
-            </Dropzone>
-            <p>Select a dataset.</p>
-            <Button onClick={() => this.setState({ dataset: datasets['diamonds'] })}>diamonds</Button>
+      <div style={{ height: window.innerHeight, backgroundImage: `url(${bkg})`, backgroundRepeat: 'none', backgroundPosition: '0 0', backgroundSize: 'cover' }}>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <Row center="xs" middle="xs" style={{ height: window.innerHeight / 2 }}>
+          <Dropzone onDrop={this.onDrop} className="box">
+            <Col xs={12}>
+                <p>Drag and drop a <b>.csv or .json</b> file here, or click to select files to upload.</p>
+                <p>or</p>
+                <p>Select a pre-made dataset.</p>
+            </Col>
+          </Dropzone>
+          <div style={{ position: 'absolute', right: window.innerWidth / 2 - 155, top: 340  + (window.innerHeight - 626)/5  }}>
+            <Button
+              animated
+              onClick={() => this.setState({ dataset: datasets['diamonds'] })}
+              >
+                <span role="img">💎</span>{' '}diamonds
+            </Button>
             {' '}
-            <Button onClick={() => this.setState({ dataset: datasets['iris'] })}>iris</Button>
+            <Button
+              animated
+              animationDelay={0.07}
+              onClick={() => this.setState({ dataset: datasets['iris'] })}>
+                <span role="img">🌺</span>{' '}iris
+            </Button>
             {' '}
-            <Button onClick={() => this.setState({ dataset: datasets['meat'] })}>meat</Button>
-          </Col>
+            <Button
+              animated
+              animationDelay={0.14}
+              onClick={() => this.setState({ dataset: datasets['meat'] })}>
+                <span role="img">🥩</span> {' '}meat
+            </Button>
+            {' '}
+            <Button
+              animated
+              animationDelay={0.21}
+              onClick={() => this.setState({ dataset: datasets['pigeons'] })}>
+                <span role="img">🐦</span> {' '}pigeons
+            </Button>
+          </div>
         </Row>
       </div>
     );

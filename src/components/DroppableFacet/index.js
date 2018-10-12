@@ -2,8 +2,9 @@ import React from 'react';
 import { Row, Col } from 'react-flexbox-grid';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import _ from 'lodash';
+import './index.css';
 
-export default ({ name, item, onClickX }) => (
+export default ({ name, item, onClickX, placeholder }) => (
   <Row>
     <Col xs={12}>
       <small>{name}</small>
@@ -15,7 +16,7 @@ export default ({ name, item, onClickX }) => (
             >
             {
               _.isEmpty(item) ? (
-                <div className="empty-field"></div>
+                placeholder
               ) : (
                 <Draggable
                   key={`${name}-${item.id}`}

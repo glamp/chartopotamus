@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Col } from 'react-flexbox-grid';
 import _ from 'lodash';
-import moment from 'moment';
+import { formatValue } from '../../utils/format';
 import './index.css';
 
 const mean = (array) => {
@@ -9,13 +9,6 @@ const mean = (array) => {
     return _.round(_.mean(array), 4);
   }
   return array[Math.floor(array.length * 0.5)];
-}
-
-const format = (x) => {
-  if (_.isDate(x)) {
-    return moment(x).format('YYYY-MM-DD');
-  }
-  return x;
 }
 
 const getStatistics = (array) => {
@@ -38,7 +31,7 @@ const getStatistics = (array) => {
               <small>{stat[0]}</small>
             </Col>
             <Col xs={6}>
-              <small>{format(stat[1])}</small>
+              <small>{formatValue(stat[1])}</small>
             </Col>
           </Row>
         ))
