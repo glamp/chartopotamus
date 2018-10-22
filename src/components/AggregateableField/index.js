@@ -1,15 +1,23 @@
 import React from 'react';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 import './react-contextmenu.css';
+import './index.css';
 
 
 export default class ColumnField extends React.Component {
 
   render() {
-    const { provided, style } = this.props;
+    const { provided, style, type } = this.props;
+    let klass = ['field'];
+    if (type==='number') {
+      klass.push('field-number');
+    } else {
+      klass.push('field-dimension');
+    }
+
     return (
       <span
-        className="field"
+        className={klass.join(' ')}
         ref={provided.innerRef}
         {...provided.draggableProps}
         {...provided.dragHandleProps}

@@ -11,8 +11,8 @@ import './App.css';
 
 
 class App extends React.Component {
-  state = { dataset: null, width: -1, height: -1 };
-  // state = { dataset: datasets.iris, width: -1, height: -1 };
+  // state = { dataset: null, width: -1, height: -1 };
+  state = { dataset: datasets.diamonds, width: -1, height: -1 };
 
   componentDidMount() {
     window.addEventListener("resize", this.updateDimensions);

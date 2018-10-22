@@ -45,6 +45,7 @@ hr {
   border: 1px solid lightgrey;
   border-radius: 5px;
   position: relative;
+  cursor: default; 
 }
 
 .empty-field {

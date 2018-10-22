@@ -4,7 +4,7 @@ import { Droppable, Draggable } from 'react-beautiful-dnd';
 import _ from 'lodash';
 import './index.css';
 
-export default ({ name, item, onClickX, placeholder }) => (
+export default ({ name, item, onClickX, placeholder, style }) => (
   <Row>
     <Col xs={12}>
       <small>{name}</small>
@@ -13,6 +13,7 @@ export default ({ name, item, onClickX, placeholder }) => (
           <div
             className="card droppable-facet"
             ref={provided.innerRef}
+            style={style}
             >
             {
               _.isEmpty(item) ? (
